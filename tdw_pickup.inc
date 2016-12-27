@@ -55,7 +55,9 @@ enum
 static stock
 	TDW_g_sCurrentPickupId,
 	TDW_g_sPickupData[MAX_PICKUPS][E_TDW_PICKUP],
-	TDW_g_sPlayerPickup[MAX_PLAYERS] = -1;
+	TDW_g_sPlayerPickup[MAX_PLAYERS] = -1,
+	TDW_g_sTimerName[] = !"@__UPDATE_PICKUP",
+	TDW_g_sSpecifier@ii[] = !"ii";
 
 // -----------------------------------------------------------------------------
 // Hooks
@@ -234,8 +236,8 @@ public
 {
 	if (TDW_g_sPlayerPickup[playerid] != -1)
 		return 1;
-	TDW_g_sPlayerPickup[playerid] = SetTimerEx(!"@__UPDATE_PICKUP", 960, false,
-		!"ii", playerid, pickupid
+	TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName, 960, false,
+		TDW_g_sSpecifier@ii, playerid, pickupid
 	);
 	#if defined PUH@OnPlayerPickUpPickup
 		return PUH@OnPlayerPickUpPickup(playerid, pickupid);
@@ -263,11 +265,13 @@ public
 		TDW_g_sPickupData[pickupid][EI_PICKUP_X],
 		TDW_g_sPickupData[pickupid][EI_PICKUP_Y],
 		TDW_g_sPickupData[pickupid][EI_PICKUP_Z]) == 0) {
-		CallLocalFunction(!"OnPlayerPickupExit", !"ii", playerid, pickupid);
+		CallLocalFunction(!"OnPlayerPickupExit", TDW_g_sSpecifier@ii, playerid,
+			pickupid
+		);
 		TDW_g_sPlayerPickup[playerid] = -1;
 	} else {
-		TDW_g_sPlayerPickup[playerid] = SetTimerEx(!"@__UPDATE_PICKUP", 960,
-			false, !"ii", playerid, pickupid
+		TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName, 960,
+			false, TDW_g_sSpecifier@ii, playerid, pickupid
 		);
 	}
 	return;
