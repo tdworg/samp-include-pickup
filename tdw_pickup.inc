@@ -37,7 +37,9 @@ freely, subject to the following restrictions:
 const
 	INVALID_PICKUP_ID = -1,
 	INVALID_PICKUP_MODEL = -1,
-	INVALID_PICKUP_TYPE = -1;
+	INVALID_PICKUP_TYPE = -1,
+	TDW_PICKUP_INTERVAL = 960;
+
 
 forward OnPlayerPickupExit(playerid, pickupid);
 
@@ -236,8 +238,8 @@ public
 {
 	if (TDW_g_sPlayerPickup[playerid] != -1)
 		return 1;
-	TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName, 960, false,
-		TDW_g_sSpecifier@ii, playerid, pickupid
+	TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName,
+		TDW_PICKUP_INTERVAL, false, TDW_g_sSpecifier@ii, playerid, pickupid
 	);
 	#if defined PUH@OnPlayerPickUpPickup
 		return PUH@OnPlayerPickUpPickup(playerid, pickupid);
@@ -270,8 +272,8 @@ public
 		);
 		TDW_g_sPlayerPickup[playerid] = -1;
 	} else {
-		TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName, 960,
-			false, TDW_g_sSpecifier@ii, playerid, pickupid
+		TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName,
+			TDW_PICKUP_INTERVAL, false, TDW_g_sSpecifier@ii, playerid, pickupid
 		);
 	}
 	return;
