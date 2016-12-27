@@ -229,6 +229,29 @@ stock
 	return 1;
 }
 
+stock
+	HidePickup(pickupid)
+{
+	if (IsValidPickup(pickupid) == 0)
+		return 0;
+	// Change the pickup position, and save the ID in SA:MP pool.
+	npuh_DestroyPickup(pickupid);
+	npuh_CreatePickup(TDW_g_sPickupData[pickupid][EI_PICKUP_MODEL],
+		TDW_g_sPickupData[pickupid][EI_PICKUP_TYPE],
+		0.0, 0.0, -1000.0,
+		TDW_g_sPickupData[pickupid][EI_PICKUP_VW]
+	);
+	return 1;
+}
+
+stock
+	ShowPickup(pickupid)
+{
+	if (IsValidPickup(pickupid) == 0)
+		return 0;
+	return UpdatePickup(pickupid);
+}
+
 // -----------------------------------------------------------------------------
 // Fixes
 // -----------------------------------------------------------------------------
