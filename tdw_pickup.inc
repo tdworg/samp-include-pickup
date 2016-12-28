@@ -38,7 +38,8 @@ const
 	INVALID_PICKUP_ID = -1,
 	INVALID_PICKUP_MODEL = -1,
 	INVALID_PICKUP_TYPE = -1,
-	TDW_PICKUP_INTERVAL = 960;
+	TDW_PICKUP_INTERVAL = 960,
+	Float:TDW_PICKUP_DISTANCE = 1.4;
 
 
 forward OnPlayerPickupExit(playerid, pickupid);
@@ -286,7 +287,7 @@ public
 @__UPDATE_PICKUP(playerid, pickupid);
 @__UPDATE_PICKUP(playerid, pickupid)
 {
-	if (IsPlayerInRangeOfPoint(playerid, 1.4,
+	if (IsPlayerInRangeOfPoint(playerid, TDW_PICKUP_DISTANCE,
 		TDW_g_sPickupData[pickupid][EI_PICKUP_X],
 		TDW_g_sPickupData[pickupid][EI_PICKUP_Y],
 		TDW_g_sPickupData[pickupid][EI_PICKUP_Z]) == 0) {
