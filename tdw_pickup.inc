@@ -71,7 +71,8 @@ static stock
 	TDW_g_sCallbacks,
 	TDW_g_sOnPlayerPickupExit[] = !"OnPlayerPickupExit",
 	TDW_g_sOnPlayerPickupEnter[] = !"OnPlayerPickupEnter",
-	E_TDW_PICKUP_FLAG:TDW_g_sPlayerFlags[MAX_PLAYERS];
+	E_TDW_PICKUP_FLAG:TDW_g_sPlayerFlags[MAX_PLAYERS],
+	TDW_g_sPlayerTakePickup[MAX_PLAYERS] = INVALID_PICKUP_ID;
 
 // -----------------------------------------------------------------------------
 // Hooks
@@ -264,6 +265,13 @@ stock
 	return UpdatePickup(pickupid);
 }
 
+stock
+	IsPlayerTakePickup(playerid, pickupid)
+{
+	return (IsPlayerConnected(playerid) != 0) &&
+		(TDW_g_sPlayerTakePickup[playerid] == pickupid);
+}
+
 // -----------------------------------------------------------------------------
 // Fixes
 // -----------------------------------------------------------------------------
@@ -273,6 +281,7 @@ public
 	OnPlayerConnect(playerid)
 {
 	(_:TDW_g_sPlayerFlags[playerid] = 0);
+	TDW_g_sPlayerTakePickup[playerid] = INVALID_PICKUP_ID;
 	return
 	#if defined PUH@OnPlayerConnect
 		PUH@OnPlayerConnect(playerid);
@@ -360,6 +369,7 @@ public
 	if ((_:(TDW_g_sPlayerFlags[playerid] & EI_PLAYER_TAKE_PICKUP) == 0) &&
 		(TDW_g_sCallbacks & 2))
 	{
+		TDW_g_sPlayerTakePickup[playerid] = pickupid;
 		TDW_g_sPlayerFlags[playerid] |= EI_PLAYER_TAKE_PICKUP;
 		CallLocalFunction(TDW_g_sOnPlayerPickupEnter, TDW_g_sSpecifier@ii,
 			playerid, pickupid
@@ -393,6 +403,7 @@ public
 		TDW_g_sPickupData[pickupid][EI_PICKUP_Z]) == 0)
 	{
 		TDW_g_sPlayerPickup[playerid] = -1;
+		TDW_g_sPlayerTakePickup[playerid] = INVALID_PICKUP_ID;
 		TDW_g_sPlayerFlags[playerid] &= ~EI_PLAYER_TAKE_PICKUP;
 		CallLocalFunction(TDW_g_sOnPlayerPickupExit, TDW_g_sSpecifier@ii,
 			playerid, pickupid
