@@ -101,7 +101,6 @@ stock
 		TDW_g_sPickupData[TDW_g_sCurrentPickupId][EI_PICKUP_Y] = Y;
 		TDW_g_sPickupData[TDW_g_sCurrentPickupId][EI_PICKUP_Z] = Z;
 		TDW_g_sPickupData[TDW_g_sCurrentPickupId][EI_PICKUP_VW] = virtualworld;
-		(_:TDW_g_sPickupData[TDW_g_sCurrentPickupId][EI_PICKUP_FLAGS] = 0);
 	}
 	return TDW_g_sCurrentPickupId;
 }
@@ -129,6 +128,7 @@ stock
 		TDW_g_sPickupData[pickupid][EI_PICKUP_X] =
 		TDW_g_sPickupData[pickupid][EI_PICKUP_Y] =
 		TDW_g_sPickupData[pickupid][EI_PICKUP_Z] = 0.0;
+		(_:TDW_g_sPickupData[pickupid][EI_PICKUP_FLAGS] = 0);
 		return 1;
 	}
 	return 0;
