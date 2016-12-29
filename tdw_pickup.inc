@@ -62,7 +62,7 @@ static stock
 	TDW_g_sTimerName[] = !"@__UPDATE_PICKUP",
 	TDW_g_sSpecifier@ii[] = !"ii",
 	TDW_g_sCallbacks,
-	TDW_g_sOnPlayerPickupExit[] = "OnPlayerPickupExit";
+	TDW_g_sOnPlayerPickupExit[] = !"OnPlayerPickupExit";
 
 // -----------------------------------------------------------------------------
 // Hooks
