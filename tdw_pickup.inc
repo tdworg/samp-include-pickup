@@ -43,6 +43,7 @@ const
 
 
 forward OnPlayerPickupExit(playerid, pickupid);
+forward OnPlayerPickupEnter(playerid, pickupid);
 
 enum
 	E_TDW_PICKUP
@@ -55,6 +56,12 @@ enum
 	EI_PICKUP_VW // virtual world
 };
 
+enum
+	E_TDW_PICKUP_FLAG (<<= 1)
+{
+	EI_PLAYER_TAKE_PICKUP = 1
+};
+
 static stock
 	TDW_g_sCurrentPickupId,
 	TDW_g_sPickupData[MAX_PICKUPS][E_TDW_PICKUP],
@@ -62,7 +69,9 @@ static stock
 	TDW_g_sTimerName[] = !"@__UPDATE_PICKUP",
 	TDW_g_sSpecifier@ii[] = !"ii",
 	TDW_g_sCallbacks,
-	TDW_g_sOnPlayerPickupExit[] = !"OnPlayerPickupExit";
+	TDW_g_sOnPlayerPickupExit[] = !"OnPlayerPickupExit",
+	TDW_g_sOnPlayerPickupEnter[] = !"OnPlayerPickupEnter",
+	E_TDW_PICKUP_FLAG:TDW_g_sPlayerFlags[MAX_PLAYERS];
 
 // -----------------------------------------------------------------------------
 // Hooks
@@ -259,6 +268,29 @@ stock
 // Fixes
 // -----------------------------------------------------------------------------
 
+// OnPlayerConnect
+public
+	OnPlayerConnect(playerid)
+{
+	(_:TDW_g_sPlayerFlags[playerid] = 0);
+	return
+	#if defined PUH@OnPlayerConnect
+		PUH@OnPlayerConnect(playerid);
+	#else
+		1;
+	#endif
+}
+#if defined _ALS_OnPlayerConnect
+	#undef OnPlayerConnect
+#else
+	#define _ALS_OnPlayerConnect
+#endif
+
+#define OnPlayerConnect PUH@OnPlayerConnect
+
+#if defined PUH@OnPlayerConnect
+	forward PUH@OnPlayerConnect(playerid);
+#endif
 
 // OnFilterScriptInit/OnGameModeInit hook
 #if defined FILTERSCRIPT
@@ -267,6 +299,8 @@ stock
 	{
 		if (funcidx(TDW_g_sOnPlayerPickupExit) != -1)
 			TDW_g_sCallbacks |= 1;
+		if (funcidx(TDW_g_sOnPlayerPickupEnter) != -1)
+			TDW_g_sCallbacks |= 2;
 		return
 		#if defined PUH@OnFilterScriptInit
 			PUH@OnFilterScriptInit();
@@ -292,6 +326,8 @@ stock
 	{
 		if (funcidx(TDW_g_sOnPlayerPickupExit) != -1)
 			TDW_g_sCallbacks |= 1;
+		if (funcidx(TDW_g_sOnPlayerPickupEnter) != -1)
+			TDW_g_sCallbacks |= 2;
 		return
 		#if defined PUH@OnGameModeInit
 			PUH@OnGameModeInit();
@@ -321,6 +357,14 @@ public
 			TDW_PICKUP_INTERVAL, false, TDW_g_sSpecifier@ii, playerid, pickupid
 		);
 	}
+	if ((_:(TDW_g_sPlayerFlags[playerid] & EI_PLAYER_TAKE_PICKUP) == 0) &&
+		(TDW_g_sCallbacks & 2))
+	{
+		TDW_g_sPlayerFlags[playerid] |= EI_PLAYER_TAKE_PICKUP;
+		CallLocalFunction(TDW_g_sOnPlayerPickupEnter, TDW_g_sSpecifier@ii,
+			playerid, pickupid
+		);
+	}
 	#if defined PUH@OnPlayerPickUpPickup
 		return PUH@OnPlayerPickUpPickup(playerid, pickupid);
 	#else
@@ -348,10 +392,11 @@ public
 		TDW_g_sPickupData[pickupid][EI_PICKUP_Y],
 		TDW_g_sPickupData[pickupid][EI_PICKUP_Z]) == 0)
 	{
+		TDW_g_sPlayerPickup[playerid] = -1;
+		TDW_g_sPlayerFlags[playerid] &= ~EI_PLAYER_TAKE_PICKUP;
 		CallLocalFunction(TDW_g_sOnPlayerPickupExit, TDW_g_sSpecifier@ii,
 			playerid, pickupid
 		);
-		TDW_g_sPlayerPickup[playerid] = -1;
 	} else {
 		TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName,
 			TDW_PICKUP_INTERVAL, false, TDW_g_sSpecifier@ii, playerid, pickupid
