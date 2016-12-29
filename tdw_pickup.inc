@@ -46,6 +46,12 @@ forward OnPlayerPickupExit(playerid, pickupid);
 forward OnPlayerPickupEnter(playerid, pickupid);
 
 enum
+	E_TDW_PICKUP_FLAG (<<= 1)
+{
+	EI_PICKUP_HIDDEN = 1
+};
+
+enum
 	E_TDW_PICKUP
 {
 	EI_PICKUP_MODEL,
@@ -53,13 +59,14 @@ enum
 	Float:EI_PICKUP_X,
 	Float:EI_PICKUP_Y,
 	Float:EI_PICKUP_Z,
-	EI_PICKUP_VW // virtual world
+	EI_PICKUP_VW, // virtual world
+	E_TDW_PICKUP_FLAG:EI_PICKUP_FLAGS
 };
 
 enum
-	E_TDW_PICKUP_FLAG (<<= 1)
+	E_TDW_PLAYER_PICKUP_FLAG (<<= 1)
 {
-	EI_PLAYER_TAKE_PICKUP = 1
+	EI_PLAYER_TAKE_PICKUP = 1,
 };
 
 static stock
@@ -71,7 +78,7 @@ static stock
 	TDW_g_sCallbacks,
 	TDW_g_sOnPlayerPickupExit[] = !"OnPlayerPickupExit",
 	TDW_g_sOnPlayerPickupEnter[] = !"OnPlayerPickupEnter",
-	E_TDW_PICKUP_FLAG:TDW_g_sPlayerFlags[MAX_PLAYERS],
+	E_TDW_PLAYER_PICKUP_FLAG:TDW_g_sPlayerFlags[MAX_PLAYERS],
 	TDW_g_sPlayerTakePickup[MAX_PLAYERS] = INVALID_PICKUP_ID;
 
 // -----------------------------------------------------------------------------
@@ -94,6 +101,7 @@ stock
 		TDW_g_sPickupData[TDW_g_sCurrentPickupId][EI_PICKUP_Y] = Y;
 		TDW_g_sPickupData[TDW_g_sCurrentPickupId][EI_PICKUP_Z] = Z;
 		TDW_g_sPickupData[TDW_g_sCurrentPickupId][EI_PICKUP_VW] = virtualworld;
+		(_:TDW_g_sPickupData[TDW_g_sCurrentPickupId][EI_PICKUP_FLAGS] = 0);
 	}
 	return TDW_g_sCurrentPickupId;
 }
@@ -247,6 +255,10 @@ stock
 {
 	if (IsValidPickup(pickupid) == 0)
 		return 0;
+	if (_:(TDW_g_sPickupData[pickupid][EI_PICKUP_FLAGS] &
+		EI_PICKUP_HIDDEN) == 0)
+		return 0;
+	TDW_g_sPickupData[pickupid][EI_PICKUP_FLAGS] ^= EI_PICKUP_HIDDEN;
 	// Change the pickup position, and save the ID in SA:MP pool.
 	npuh_DestroyPickup(pickupid);
 	npuh_CreatePickup(TDW_g_sPickupData[pickupid][EI_PICKUP_MODEL],
@@ -262,6 +274,10 @@ stock
 {
 	if (IsValidPickup(pickupid) == 0)
 		return 0;
+	if (_:(TDW_g_sPickupData[pickupid][EI_PICKUP_FLAGS] &
+		EI_PICKUP_HIDDEN) != 0)
+		return 0;
+	TDW_g_sPickupData[pickupid][EI_PICKUP_FLAGS] ^= EI_PICKUP_HIDDEN;
 	return UpdatePickup(pickupid);
 }
 
@@ -270,6 +286,13 @@ stock
 {
 	return (IsPlayerConnected(playerid) != 0) &&
 		(TDW_g_sPlayerTakePickup[playerid] == pickupid);
+}
+
+stock
+	IsPickupHidden(pickupid)
+{
+	return IsValidPickup(pickupid) &&
+		(TDW_g_sPickupData[pickupid][EI_PICKUP_FLAGS] & EI_PICKUP_HIDDEN);
 }
 
 // -----------------------------------------------------------------------------
