@@ -268,8 +268,8 @@ stock
 		if (funcidx(TDW_g_sOnPlayerPickupExit) != -1)
 			TDW_g_sCallbacks |= 1;
 		return
-		#if defined TDWDH@OnFilterScriptInit
-			TDWDH@OnFilterScriptInit();
+		#if defined PUH@OnFilterScriptInit
+			PUH@OnFilterScriptInit();
 		#else
 			1;
 		#endif
@@ -281,10 +281,10 @@ stock
 		#define _ALS_OnFilterScriptInit
 	#endif
 
-	#define OnFilterScriptInit TDWDH@OnFilterScriptInit
+	#define OnFilterScriptInit PUH@OnFilterScriptInit
 
-	#if defined TDWDH@OnFilterScriptInit
-		forward TDWDH@OnFilterScriptInit();
+	#if defined PUH@OnFilterScriptInit
+		forward PUH@OnFilterScriptInit();
 	#endif
 #else
 	public
@@ -293,8 +293,8 @@ stock
 		if (funcidx(TDW_g_sOnPlayerPickupExit) != -1)
 			TDW_g_sCallbacks |= 1;
 		return
-		#if defined TDWDH@OnGameModeInit
-			TDWDH@OnGameModeInit();
+		#if defined PUH@OnGameModeInit
+			PUH@OnGameModeInit();
 		#else
 			1;
 		#endif
@@ -306,10 +306,10 @@ stock
 		#define _ALS_OnGameModeInit
 	#endif
 
-	#define OnGameModeInit TDWDH@OnGameModeInit
+	#define OnGameModeInit PUH@OnGameModeInit
 
-	#if defined TDWDH@OnGameModeInit
-		forward TDWDH@OnGameModeInit();
+	#if defined PUH@OnGameModeInit
+		forward PUH@OnGameModeInit();
 	#endif
 #endif
 
