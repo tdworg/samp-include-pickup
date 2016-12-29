@@ -280,7 +280,7 @@ stock
 public
 	OnPlayerConnect(playerid)
 {
-	(_:TDW_g_sPlayerFlags[playerid] = 0);
+	// (_:TDW_g_sPlayerFlags[playerid] = 0);
 	TDW_g_sPlayerTakePickup[playerid] = INVALID_PICKUP_ID;
 	return
 	#if defined PUH@OnPlayerConnect
@@ -366,11 +366,11 @@ public
 			TDW_PICKUP_INTERVAL, false, TDW_g_sSpecifier@ii, playerid, pickupid
 		);
 	}
-	if ((_:(TDW_g_sPlayerFlags[playerid] & EI_PLAYER_TAKE_PICKUP) == 0) &&
+	if ((TDW_g_sPlayerTakePickup[playerid] != pickupid) &&
 		(TDW_g_sCallbacks & 2))
 	{
 		TDW_g_sPlayerTakePickup[playerid] = pickupid;
-		TDW_g_sPlayerFlags[playerid] |= EI_PLAYER_TAKE_PICKUP;
+		// TDW_g_sPlayerFlags[playerid] |= EI_PLAYER_TAKE_PICKUP;
 		CallLocalFunction(TDW_g_sOnPlayerPickupEnter, TDW_g_sSpecifier@ii,
 			playerid, pickupid
 		);
@@ -404,7 +404,7 @@ public
 	{
 		TDW_g_sPlayerPickup[playerid] = -1;
 		TDW_g_sPlayerTakePickup[playerid] = INVALID_PICKUP_ID;
-		TDW_g_sPlayerFlags[playerid] &= ~EI_PLAYER_TAKE_PICKUP;
+		// TDW_g_sPlayerFlags[playerid] &= ~EI_PLAYER_TAKE_PICKUP;
 		CallLocalFunction(TDW_g_sOnPlayerPickupExit, TDW_g_sSpecifier@ii,
 			playerid, pickupid
 		);
