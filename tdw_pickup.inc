@@ -60,7 +60,9 @@ static stock
 	TDW_g_sPickupData[MAX_PICKUPS][E_TDW_PICKUP],
 	TDW_g_sPlayerPickup[MAX_PLAYERS] = -1,
 	TDW_g_sTimerName[] = !"@__UPDATE_PICKUP",
-	TDW_g_sSpecifier@ii[] = !"ii";
+	TDW_g_sSpecifier@ii[] = !"ii",
+	TDW_g_sCallbacks,
+	TDW_g_sOnPlayerPickupExit[] = "OnPlayerPickupExit";
 
 // -----------------------------------------------------------------------------
 // Hooks
@@ -257,14 +259,68 @@ stock
 // Fixes
 // -----------------------------------------------------------------------------
 
+
+// OnFilterScriptInit/OnGameModeInit hook
+#if defined FILTERSCRIPT
+	public
+		OnFilterScriptInit()
+	{
+		if (funcidx(TDW_g_sOnPlayerPickupExit) != -1)
+			TDW_g_sCallbacks |= 1;
+		return
+		#if defined TDWDH@OnFilterScriptInit
+			TDWDH@OnFilterScriptInit();
+		#else
+			1;
+		#endif
+	}
+
+	#if defined _ALS_OnFilterScriptInit
+		#undef OnFilterScriptInit
+	#else
+		#define _ALS_OnFilterScriptInit
+	#endif
+
+	#define OnFilterScriptInit TDWDH@OnFilterScriptInit
+
+	#if defined TDWDH@OnFilterScriptInit
+		forward TDWDH@OnFilterScriptInit();
+	#endif
+#else
+	public
+		OnGameModeInit()
+	{
+		if (funcidx(TDW_g_sOnPlayerPickupExit) != -1)
+			TDW_g_sCallbacks |= 1;
+		return
+		#if defined TDWDH@OnGameModeInit
+			TDWDH@OnGameModeInit();
+		#else
+			1;
+		#endif
+	}
+
+	#if defined _ALS_OnGameModeInit
+		#undef OnGameModeInit
+	#else
+		#define _ALS_OnGameModeInit
+	#endif
+
+	#define OnGameModeInit TDWDH@OnGameModeInit
+
+	#if defined TDWDH@OnGameModeInit
+		forward TDWDH@OnGameModeInit();
+	#endif
+#endif
+
 public
 	OnPlayerPickUpPickup(playerid, pickupid)
 {
-	if (TDW_g_sPlayerPickup[playerid] != -1)
-		return 1;
-	TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName,
-		TDW_PICKUP_INTERVAL, false, TDW_g_sSpecifier@ii, playerid, pickupid
-	);
+	if ((TDW_g_sPlayerPickup[playerid] == -1) && (TDW_g_sCallbacks & 1)) {
+		TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName,
+			TDW_PICKUP_INTERVAL, false, TDW_g_sSpecifier@ii, playerid, pickupid
+		);
+	}
 	#if defined PUH@OnPlayerPickUpPickup
 		return PUH@OnPlayerPickUpPickup(playerid, pickupid);
 	#else
@@ -290,9 +346,10 @@ public
 	if (IsPlayerInRangeOfPoint(playerid, TDW_PICKUP_DISTANCE,
 		TDW_g_sPickupData[pickupid][EI_PICKUP_X],
 		TDW_g_sPickupData[pickupid][EI_PICKUP_Y],
-		TDW_g_sPickupData[pickupid][EI_PICKUP_Z]) == 0) {
-		CallLocalFunction(!"OnPlayerPickupExit", TDW_g_sSpecifier@ii, playerid,
-			pickupid
+		TDW_g_sPickupData[pickupid][EI_PICKUP_Z]) == 0)
+	{
+		CallLocalFunction(TDW_g_sOnPlayerPickupExit, TDW_g_sSpecifier@ii,
+			playerid, pickupid
 		);
 		TDW_g_sPlayerPickup[playerid] = -1;
 	} else {
