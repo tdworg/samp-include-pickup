@@ -389,8 +389,9 @@ public
 	if (TDW_g_sPlayerTakePickup[playerid] != pickupid) {
 		if (TDW_g_sPlayerPickup[playerid] != -1)
 			KillTimer(TDW_g_sPlayerPickup[playerid]);
-		TDW_g_sPlayerTakePickup[playerid] = pickupid;
-		if (TDW_g_sCallbacks & 2) {
+		if (TDW_g_sCallbacks & 2 &&
+			TDW_g_sPlayerTakePickup[playerid] == INVALID_PICKUP_ID)
+		{
 			CallLocalFunction(TDW_g_sOnPlayerPickupEnter, TDW_g_sSpecifier@ii,
 				playerid, pickupid
 			);
@@ -401,6 +402,7 @@ public
 				pickupid
 			);
 		}
+		TDW_g_sPlayerTakePickup[playerid] = pickupid;
 	}
 	#if defined PUH@OnPlayerPickUpPickup
 		return PUH@OnPlayerPickUpPickup(playerid, pickupid);
