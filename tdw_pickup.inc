@@ -1,4 +1,6 @@
 /** ======================================================================== **\
+	Pickup
+
 | Version:
 1.0.6
 
@@ -384,19 +386,21 @@ public
 public
 	OnPlayerPickUpPickup(playerid, pickupid)
 {
-	if ((TDW_g_sPlayerPickup[playerid] == -1) && (TDW_g_sCallbacks & 1)) {
-		TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName,
-			TDW_PICKUP_INTERVAL, false, TDW_g_sSpecifier@ii, playerid, pickupid
-		);
-	}
-	if ((TDW_g_sPlayerTakePickup[playerid] != pickupid) &&
-		(TDW_g_sCallbacks & 2))
-	{
+	if (TDW_g_sPlayerTakePickup[playerid] != pickupid) {
+		if (TDW_g_sPlayerPickup[playerid] != -1)
+			KillTimer(TDW_g_sPlayerPickup[playerid]);
 		TDW_g_sPlayerTakePickup[playerid] = pickupid;
-		// TDW_g_sPlayerFlags[playerid] |= EI_PLAYER_TAKE_PICKUP;
-		CallLocalFunction(TDW_g_sOnPlayerPickupEnter, TDW_g_sSpecifier@ii,
-			playerid, pickupid
-		);
+		if (TDW_g_sCallbacks & 2) {
+			CallLocalFunction(TDW_g_sOnPlayerPickupEnter, TDW_g_sSpecifier@ii,
+				playerid, pickupid
+			);
+		}
+		if (TDW_g_sCallbacks & 1) {
+			TDW_g_sPlayerPickup[playerid] = SetTimerEx(TDW_g_sTimerName,
+				TDW_PICKUP_INTERVAL, false, TDW_g_sSpecifier@ii, playerid,
+				pickupid
+			);
+		}
 	}
 	#if defined PUH@OnPlayerPickUpPickup
 		return PUH@OnPlayerPickUpPickup(playerid, pickupid);
