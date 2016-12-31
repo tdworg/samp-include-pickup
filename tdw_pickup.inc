@@ -2,7 +2,7 @@
 	Pickup
 
 | Version:
-1.0.6
+1.0.7
 
 | License:
 Copyright (c) 2016 Double V
