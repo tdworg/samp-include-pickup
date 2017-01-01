@@ -442,5 +442,5 @@ public
 			TDW_PICKUP_INTERVAL, false, TDW_g_sSpecifier@ii, playerid, pickupid
 		);
 	}
-	return;
+	return 0;
 }
