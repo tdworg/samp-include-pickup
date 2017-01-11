@@ -389,6 +389,7 @@ public
 	if (TDW_g_sPlayerTakePickup[playerid] != pickupid) {
 		if (TDW_g_sPlayerPickup[playerid] != -1)
 			KillTimer(TDW_g_sPlayerPickup[playerid]);
+		TDW_g_sPlayerTakePickup[playerid] = pickupid;
 		if (TDW_g_sCallbacks & 2 &&
 			TDW_g_sPlayerTakePickup[playerid] == INVALID_PICKUP_ID)
 		{
@@ -402,7 +403,6 @@ public
 				pickupid
 			);
 		}
-		TDW_g_sPlayerTakePickup[playerid] = pickupid;
 	}
 	#if defined PUH@OnPlayerPickUpPickup
 		return PUH@OnPlayerPickUpPickup(playerid, pickupid);
